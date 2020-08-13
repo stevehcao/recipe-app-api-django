@@ -1,6 +1,7 @@
 from rest_framework import generics
-
-from user.serializers import UserSerializer
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.settings import api_settings
+from user.serializers import AuthTokenSerializer, UserSerializer
 
 
 # generics.CreateAPIView premade from DRF
@@ -8,3 +9,12 @@ from user.serializers import UserSerializer
 class CreateUserView(generics.CreateAPIView):
     """Create a new user in the system"""
     serializer_class = UserSerializer
+
+
+# take this token and save somewhere to authenticate
+# can save as a cookie and use later
+class CreateTokenView(ObtainAuthToken):
+    """Create a new auth token for the user"""
+    serializer_class = AuthTokenSerializer
+    # this let's you see this endpoint for renderer class for ObtainAuthToken
+    renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
