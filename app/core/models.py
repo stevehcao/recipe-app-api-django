@@ -1,10 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, \
     PermissionsMixin
+from django.conf import settings
 
 
+# This usermanager class is only for altering create_user or create_superuser
 class UserManager(BaseUserManager):
-
     def create_user(self, email, password=None, **extra_fields):
         # **extra_fields, takes extra functions passed in to extra_fields
         # add new fields more flexible
@@ -14,6 +15,7 @@ class UserManager(BaseUserManager):
         user = self.model(email=self.normalize_email(email), **extra_fields)
         user.set_password(password)
         # using=self._db is for handling different database, can look up later
+        # can normally just  do user.save()
         user.save(using=self._db)
 
         return user
@@ -40,3 +42,17 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
+
+
+class Tag(models.Model):
+    """Tag to be used for a recipe"""
+    name = models.CharField(max_length=255)
+    # foreign key to user model
+    # best practice is grabbing auth user from settings
+    # ForeignKey(model, what happens when you delete)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    # string representation
+    def __str__(self):
+        return self.name

@@ -20,4 +20,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # any request that starts with api/user/ points to user.urls (user > urls.py)
     path('api/user/', include('user.urls')),
+    path('api/recipe/', include('recipe.urls')),
 ]
