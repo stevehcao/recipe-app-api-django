@@ -1,8 +1,8 @@
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, generics
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
-from core.models import Tag
+from core.models import Tag, Ingredient
 
 from recipe import serializers
 
@@ -22,6 +22,33 @@ class TagViewSet(viewsets.GenericViewSet, mixins.ListModelMixin,
         return self.queryset.filter(user=self.request.user).order_by('-name')
 
     # override create for custom
+    # serializer is passed in and save
     def perform_create(self, serializer):
         """Create a new ingredient"""
         serializer.save(user=self.request.user)
+
+
+# # view for ingredients can use viewsets and mixin or generic class view
+# class IngredientViewSet(generics.ListCreateAPIView):
+#     queryset = Ingredient.objects.all()
+#     serializer_class = serializers.IngredientSerializer
+#     permission_classes = [IsAuthenticated]
+
+# can override various methods on the view class for complex queries
+# def list(self, request):
+# Note the use of `get_queryset()` instead of `self.queryset`
+# queryset = self.get_queryset()
+# serializer = IngredientSerializer(queryset, many=True)
+# return Response(serializer.data)
+
+
+class IngredientViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
+    """Manage ingredients in the database"""
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = (IsAuthenticated, )
+    queryset = Ingredient.objects.all()
+    serializer_class = serializers.IngredientSerializer
+
+    def get_queryset(self):
+        """Return objects for the current authenticated user only"""
+        return self.queryset.filter(user=self.request.user).order_by('-name')
