@@ -7,7 +7,7 @@ from recipe import views
 # https://www.django-rest-framework.org/api-guide/routers/
 # api/recipe/tags/
 # api/recipe/tags/<id> etc...
-# what it will do is auto  generate url for the router
+# what it will do is auto generate url for the router
 # https://stackoverflow.com/questions/37661868/how-to-use-router-in-django-rest-not-for-viewsets-but-for-generic-views
 # will only work with DRF viewset due to how it works
 
