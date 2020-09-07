@@ -40,3 +40,4 @@ admin.site.register(models.User, UserAdmin)
 # just need to register tag because you just want basic, default from model CRUD
 admin.site.register(models.Tag)
 admin.site.register(models.Ingredient)
+admin.site.register(models.Recipe)
