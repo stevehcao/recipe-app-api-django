@@ -14,10 +14,9 @@ from recipe import views
 router = DefaultRouter()
 router.register('tags', views.TagViewSet)
 router.register('ingredients', views.IngredientViewSet)
+router.register('recipes', views.RecipeViewSet)
 
 # this allows you to register app name for reverse('recipe:Tags')
 app_name = 'recipe'
 
-urlpatterns = [
-    path('', include(router.urls))
-]
+urlpatterns = [path('', include(router.urls))]
