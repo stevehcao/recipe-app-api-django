@@ -45,3 +45,10 @@ class RecipeSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ('id', )
         # prevent PK from changing
+
+
+class RecipeDetailSerializer(RecipeSerializer):
+    """Serialize a receipe detail"""
+    # override the igredients and tags so that you read all fields
+    ingredients = IngredientSerializer(many=True, read_only=True)
+    tags = TagSerializer(many=True, read_only=True)
