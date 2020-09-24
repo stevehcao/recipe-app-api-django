@@ -114,3 +114,80 @@ class PrivateRecipeApiTests(TestCase):
         # res.data is the actual api call
         serializer = RecipeDetailSerializer(recipe)
         self.assertEqual(res.data, serializer.data)
+
+    # --tests for creating basic recipe--
+    # payload of what is needed to created a new recipe, in this case: title, time_minutes, price
+
+
+def test_create_basic_recipe(self):
+    """Test creating recipe"""
+    payload = {
+        'title': 'Test recipe',
+        'time_minutes': 30,
+        'price': 10.00,
+    }
+
+    # actual request to get res = response
+    # self.client is defined in the setUp, which is APIClient() from DRF
+    res = self.client.post(RECIPES_URL, payload)
+
+    self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+    # recipe is querying the recipe by id
+    # NOTE: when creating an object with DRF the default behavior is that it will
+    # return a dictionary of the created object.  that's how you use res.data['id']
+    recipe = Recipe.objects.get(id=res.data['id'])
+
+    # looping through the payload keys
+    # check to check if the payload is the same as the newly created recipe
+    # NOTE: getattr(object, variable) method from python, let's you get keys by a variable name
+    # retrieve an attribute from an object by passing in a variable
+    # can't just to recipe.key
+    for key in payload.keys():
+        self.assertEqual(payload[key],
+                         getattr(recipe, key))  # same as recipe.title etc...
+
+
+def test_create_recipe_with_tags(self):
+    """Test creating a recipe with tags"""
+    tag1 = sample_tag(user=self.user, name='Vegan')
+    tag2 = sample_tag(user=self.user, name='Dessert')
+    payload = {
+        'title': 'Yummy food with two tags',
+        'tags': [tag1.id, tag2.id],
+        'time_minutes': 30,
+        'price': 10.00
+    }
+
+    res = self.client.post(RECIPES_URL, payload)
+
+    self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+    recipe = Recipe.objects.get(id=res.data['id'])
+    # able to do recipe.tags.all() because in recipe tags are many to many relationship
+    tags = recipe.tags.all()
+    self.assertEqual(tags.count(), 2)
+    # test to see if the tags we created
+    # assertIn can use in list or queryset
+    self.assertIn(tag1, tags)
+    self.assertIn(tag2, tags)
+
+
+def test_create_recipe_with_ingredients(self):
+    """Test creating recipe with ingredients"""
+    ingredient1 = sample_ingredient(user=self.user, name='Shrimps')
+    ingredient2 = sample_ingredient(user=self.user, name='Honey Walnuts')
+    payload = {
+        'title': 'Test recipe with ingredients',
+        'ingredients': [ingredient1.id, ingredient2.id],
+        'time_minutes': 45,
+        'price': 15.00
+    }
+    res = self.client.post(RECIPES_URL, payload)
+
+    self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+    # grab the recipe
+    recipe = Recipe.objects.get(id=res.data['id'])
+    # to grab ingredients from the receipe
+    ingredients = recipe.ingredients.all()
+    self.assertEqual(ingredients.count(), 2)
+    self.assertIn(ingredient1, ingredients)
+    self.assertIn(ingredient2, ingredients)

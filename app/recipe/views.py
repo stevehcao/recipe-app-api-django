@@ -34,6 +34,7 @@ class IngredientViewSet(BaseRecipeAttrViewSet):
     serializer_class = serializers.IngredientSerializer
 
 
+# ModelViewSet let's you create objects out of the box
 class RecipeViewSet(viewsets.ModelViewSet):
     """Manage recipes in the database"""
     serializer_class = serializers.RecipeSerializer
@@ -46,12 +47,17 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return self.queryset.filter(user=self.request.user)
 
     # overwrite serializer class for retrieve
+    # will return a different serializer
     def get_serializer_class(self):
         """Return appropriate serializer class"""
         if self.action == 'retrieve':
             return serializers.RecipeDetailSerializer
 
         return self.serializer_class
+
+    def perform_create(self, serializer):
+        """Create a new recipe"""
+        serializer.save(user=self.request.user)
 
 
 # can use a different viewset instead of mixin as well
