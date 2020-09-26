@@ -2,6 +2,8 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from core import models
 
+from unittest.mock import patch
+
 
 # create default user's
 def sample_user(email='test@londonappdev.com', password='testpass'):
@@ -64,3 +66,18 @@ class ModelTests(TestCase):
             price=5.00)
 
         self.assertEqual(str(recipe), recipe.title)
+
+    @patch('uuid.uuid4')
+    def test_recipe_file_name_uuid(self, mock_uuid):
+        """Test that image is saved in the correct location"""
+        # mocking the uuid function with a fake test uuid
+        uuid = 'test-uuid'
+        mock_uuid.return_value = uuid
+        # function recipe_image_file_path, will return the file path
+        # first argument is instance, which we don't need yet and second id image
+        file_path = models.recipe_image_file_path(None, 'myimage.jpg')
+
+        # f string is string literal format, 3.6+ pythong
+        # allows you to use variables
+        exp_path = f'uploads/recipe/{uuid}.jpg'
+        self.assertEqual(file_path, exp_path)

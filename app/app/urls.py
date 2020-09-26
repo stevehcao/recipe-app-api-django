@@ -15,10 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf.urls.static import static
+from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     # any request that starts with api/user/ points to user.urls (user > urls.py)
     path('api/user/', include('user.urls')),
     path('api/recipe/', include('recipe.urls')),
-]
+] + static(
+    settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    # what the static settings.MEDIA_URL does is that it let's media url avail in development server
