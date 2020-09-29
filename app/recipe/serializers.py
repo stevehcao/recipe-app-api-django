@@ -52,3 +52,13 @@ class RecipeDetailSerializer(RecipeSerializer):
     # override the igredients and tags so that you read all fields
     ingredients = IngredientSerializer(many=True, read_only=True)
     tags = TagSerializer(many=True, read_only=True)
+
+
+class RecipeImageSerializer(serializers.ModelSerializer):
+    """Serializer for uploading images to recipe"""
+
+    class Meta:
+        model = Recipe
+        # only to accept image field for this serializer
+        fields = ('id', 'image')
+        read_only_fields = ('id', )
